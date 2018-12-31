@@ -10,14 +10,24 @@ FINGERS_KEY=${FINGERS_KEY:-$DEFAULT_FINGERS_KEY}
 
 tmux bind-key $FINGERS_KEY run-shell "$CURRENT_DIR/scripts/tmux-fingers.sh"
 
+function fingers_bind() {
+  local key="$1"
+  local command="$2"
+
+  tmux bind-key -Tfingers "$key" send-keys "$command" \\\; send-keys Enter \\\; switch-client -Tfingers
+}
+
 for char in {a..z}
 do
-  action="display-message"
-  action="send-keys"
 
   # TODO might need to unbind prefix :O
 
-  tmux bind-key -Tfingers "$char" "$action" "$char" \\\; switch-client -Tfingers
-  tmux bind-key -Tfingers "C-$char" "$action" "$(echo $char | tr '[:lower:]' '[:upper:]')" \\\; switch-client -Tfingers
-  tmux bind-key -Tfingers "M-$char" "$action" "$(echo $char | tr '[:lower:]' '[:upper:]')" \\\; switch-client -Tfingers
+  fingers_bind "$char" "hint:$char:primary"
+  fingers_bind "C-$char" "hint:$char:secondary"
+  fingers_bind "M-$char" "hint:$char:tertiary"
 done
+
+fingers_bind "?" "toggle-help"
+fingers_bind "space" "toggle-compact-mode"
+
+# TODO bind escape to exit
