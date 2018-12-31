@@ -14,11 +14,17 @@ function fingers_bind() {
   local key="$1"
   local command="$2"
 
+  #TODO dont let statements get recorded in bash history
   tmux bind-key -Tfingers "$key" send-keys "$command" \\\; send-keys Enter \\\; switch-client -Tfingers
 }
 
 for char in {a..z}
 do
+
+  if [[ "$char" == "c" ]]; then
+    continue
+  fi
+
 
   # TODO might need to unbind prefix :O
   # TODO might need some locking mechanism
@@ -28,7 +34,11 @@ do
   fingers_bind "M-$char" "hint:$char:tertiary"
 done
 
+fingers_bind "C-c" "exit"
+fingers_bind "Escape" "exit"
+fingers_bind "q" "exit"
+
 fingers_bind "?" "toggle-help"
-fingers_bind "space" "toggle-compact-mode"
+fingers_bind "Space" "toggle-compact-mode"
 
 # TODO bind escape to exit
