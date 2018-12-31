@@ -52,6 +52,19 @@ function run_fingers_copy_command() {
   fi
 }
 
+function revert_to_original_pane() {
+  tmux swap-pane -s "$current_pane_id" -t "$fingers_pane_id"
+  tmux set-window-option automatic-rename "$original_rename_setting"
+
+  if [[ ! -z "$last_pane_id" ]]; then
+    tmux select-pane -t "$last_pane_id"
+    tmux select-pane -t "$current_pane_id"
+  fi
+
+  [[ $pane_was_zoomed == "1" ]] && zoom_pane "$current_pane_id"
+
+}
+
 # TODO capture settings ( pane was zoomed, rename setting, bla bla ) in assoc-array and restore them on exit
 # TODO assoc-array with state
 compact_state=$FINGERS_COMPACT_HINTS
@@ -103,17 +116,26 @@ function accept_hint() {
   state[action]="$action"
 }
 
+function handle_exit() {
+  revert_to_original_pane
+  # TODO run action
+  rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
+  tmux kill-window -t "$fingers_window_id"
+}
+
 state[show_help]=0
 state[compact_mode]="$FINGERS_COMPACT_HINTS"
 state[input]=''
 state[action]=''
+
+trap "handle_exit" EXIT
 
 hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
 enable_fingers_mode
 
 while read -rs statement; do
-  #tmux display-message "$statement"
+  tmux display-message "$statement"
 
   track_state
 
@@ -127,6 +149,9 @@ while read -rs statement; do
       ;;
     hint:*)
       accept_hint "$statement"
+    ;;
+    exit)
+      exit 0
     ;;
   esac
 
@@ -147,11 +172,8 @@ while read -rs statement; do
   result=$(lookup_match "$input")
 
   if [[ -n $result ]]; then
-    tmux display-message "copying result $result"
+    tmux display-message "copying result $result ( action: ${state[action]} )"
     copy_result "$result" "$input"
-    # TODO weird, not reverting properly
-    revert_to_original_pane
-    run_fingers_copy_command "$result" "$input"
-    tmux kill-window -t "$fingers_window_id"
+    exit 0
   fi
 done < /dev/tty
