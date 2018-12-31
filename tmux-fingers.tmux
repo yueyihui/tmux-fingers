@@ -21,6 +21,7 @@ for char in {a..z}
 do
 
   # TODO might need to unbind prefix :O
+  # TODO might need some locking mechanism
 
   fingers_bind "$char" "hint:$char:primary"
   fingers_bind "C-$char" "hint:$char:secondary"
