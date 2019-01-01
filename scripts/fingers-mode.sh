@@ -120,6 +120,9 @@ function handle_exit() {
   revert_to_original_pane
   # TODO run action
   rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
+
+  # TODO actually switch to previous mode, or remove auto-switching from plugin init
+  tmux switch-client -Troot
   tmux kill-window -t "$fingers_window_id"
 }
 
