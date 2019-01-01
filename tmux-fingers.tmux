@@ -18,6 +18,8 @@ function fingers_bind() {
   tmux bind-key -Tfingers "$key" send-keys "$command" \\\; send-keys Enter \\\; switch-client -Tfingers
 }
 
+# TODO this might be slowing down startup, maybe run in background
+
 for char in {a..z}
 do
 
@@ -29,9 +31,10 @@ do
   # TODO might need to unbind prefix :O
   # TODO might need some locking mechanism
 
-  fingers_bind "$char" "hint:$char:primary"
-  fingers_bind "C-$char" "hint:$char:secondary"
-  fingers_bind "M-$char" "hint:$char:tertiary"
+  fingers_bind "$char" "hint:$char:main"
+  fingers_bind "$(echo "$char" | tr '[:lower:]' '[:upper:]')" "hint:$char:shift"
+  fingers_bind "C-$char" "hint:$char:ctrl"
+  fingers_bind "M-$char" "hint:$char:alt"
 done
 
 fingers_bind "C-c" "exit"
