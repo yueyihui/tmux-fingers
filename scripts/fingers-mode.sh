@@ -8,6 +8,7 @@ source $CURRENT_DIR/hints.sh
 source $CURRENT_DIR/utils.sh
 source $CURRENT_DIR/help.sh
 source $CURRENT_DIR/debug.sh
+#source $CURRENT_DIR/keys.sh
 
 current_pane_id=$1
 fingers_pane_id=$2
@@ -17,6 +18,7 @@ pane_input_temp=$5
 original_rename_setting=$6
 
 function enable_fingers_mode () {
+  tmux set-window-option key-table fingers
   tmux switch-client -T fingers
 }
 
@@ -117,13 +119,31 @@ function accept_hint() {
 }
 
 function handle_exit() {
+  log "[fingers-mode] handling exit"
   revert_to_original_pane
   # TODO run action
   rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
 
   # TODO actually switch to previous mode, or remove auto-switching from plugin init
+
+  tmux set-window-option key-table root
   tmux switch-client -Troot
+  log "[fingers-mode] exited"
   tmux kill-window -t "$fingers_window_id"
+}
+
+function read_statement() {
+  statement=''
+
+  while read -rsn1 char; do
+    if [[ "$char" == "" ]]; then
+      break
+    fi
+
+    statement="$statement$char"
+  done < /dev/tty
+
+  export statement
 }
 
 state[show_help]=0
@@ -137,7 +157,9 @@ hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
 enable_fingers_mode
 
-while read -rs statement; do
+while true; do
+  tmux wait-for -L fingers-input
+  read_statement
   tmux display-message "$statement"
 
   track_state
@@ -179,4 +201,4 @@ while read -rs statement; do
     copy_result "$result" "$input"
     exit 0
   fi
-done < /dev/tty
+done
