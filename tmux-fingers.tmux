@@ -15,7 +15,7 @@ function fingers_bind() {
   local command="$2"
 
   #TODO dont let statements get recorded in bash history
-  tmux bind-key -Tfingers "$key" send-keys "$command" \\\; send-keys Enter \\\; switch-client -Tfingers
+  tmux bind-key -Tfingers "$key" run-shell -b "$CURRENT_DIR/scripts/send-input.sh '$command'"
 }
 
 # TODO this might be slowing down startup, maybe run in background
@@ -44,4 +44,4 @@ fingers_bind "q" "exit"
 fingers_bind "?" "toggle-help"
 fingers_bind "Space" "toggle-compact-mode"
 
-# TODO bind escape to exit
+# TODO pressing a non-binded key ( ex: ; ) exits fingers mode
