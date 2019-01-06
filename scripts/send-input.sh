@@ -7,10 +7,7 @@ source $CURRENT_DIR/debug.sh
 tmux wait-for -L fingers-input
 
 log "[input] sending command '$1'"
-tmux send-keys "$1"
-
-log "[input] sending Enter"
-tmux send-keys Enter
+echo "$1" >> /tmp/fingers-command-queue
 
 tmux wait-for -U fingers-input
 

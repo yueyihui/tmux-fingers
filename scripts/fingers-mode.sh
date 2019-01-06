@@ -128,6 +128,7 @@ function handle_exit() {
 
   tmux set-window-option key-table root
   tmux switch-client -Troot
+  cat /dev/null > /tmp/fingers-command-queue
   log "[fingers-mode] exited"
   tmux kill-window -t "$fingers_window_id"
 }
@@ -157,9 +158,11 @@ hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
 enable_fingers_mode
 
-while true; do
-  tmux wait-for -L fingers-input
-  read_statement
+touch /tmp/fingers-command-queue
+cat /dev/null > /tmp/fingers-command-queue
+
+tail -f /tmp/fingers-command-queue | while read -r -s statement
+do
   tmux display-message "$statement"
 
   track_state
@@ -174,6 +177,9 @@ while true; do
       ;;
     hint:*)
       accept_hint "$statement"
+    ;;
+    continue)
+      continue
     ;;
     exit)
       exit 0

@@ -18,6 +18,8 @@ function fingers_bind() {
   tmux bind-key -Tfingers "$key" run-shell -b "$CURRENT_DIR/scripts/send-input.sh '$command'"
 }
 
+mkdir -p $CURRENT_DIR/.cache
+
 # TODO this might be slowing down startup, maybe run in background
 
 for char in {a..z}
@@ -43,5 +45,7 @@ fingers_bind "q" "exit"
 
 fingers_bind "?" "toggle-help"
 fingers_bind "Space" "toggle-compact-mode"
+
+fingers_bind "Any" "continue"
 
 # TODO pressing a non-binded key ( ex: ; ) exits fingers mode
