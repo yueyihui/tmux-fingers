@@ -8,7 +8,6 @@ source $CURRENT_DIR/hints.sh
 source $CURRENT_DIR/utils.sh
 source $CURRENT_DIR/help.sh
 source $CURRENT_DIR/debug.sh
-#source $CURRENT_DIR/keys.sh
 
 current_pane_id=$1
 fingers_pane_id=$2
