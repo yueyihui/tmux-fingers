@@ -16,6 +16,9 @@ fingers_window_id=$4
 pane_input_temp=$5
 original_rename_setting=$6
 
+HAS_TMUX_YANK=$([ "$(tmux list-keys | grep -c tmux-yank)" == "0" ]; echo $?)
+tmux_yank_copy_command=$(tmux_list_vi_copy_keys | grep -E "(vi-copy|copy-mode-vi) *y" | sed -E 's/.*copy-pipe(-and-cancel)? *"(.*)".*/\2/g')
+
 function enable_fingers_mode () {
   tmux set-window-option key-table fingers
   tmux switch-client -T fingers
@@ -204,7 +207,7 @@ do
       continue
     ;;
     exit)
-      exit 0
+      break
     ;;
   esac
 
