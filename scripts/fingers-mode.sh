@@ -26,8 +26,8 @@ function hide_cursor() {
 }
 
 function copy_result() {
-  local result="$1"
-  local hint="$2"
+  local result="${state[result]}"
+  local hint="${state[hint]}"
 
   tmux set-buffer "$result"
 
@@ -70,8 +70,8 @@ function revert_to_original_pane() {
 # TODO assoc-array with state
 compact_state=$FINGERS_COMPACT_HINTS
 
-declare -A state
-declare -A prev_state
+declare -A state=()
+declare -A prev_state=()
 
 function toggle_state() {
   local key="$1"
@@ -111,15 +111,40 @@ function did_state_change() {
 
 function accept_hint() {
   local statement="$1"
-  IFS=: read -r _command hint action <<<$(echo "$statement")
+  IFS=: read -r _command hint modifier <<<$(echo "$statement")
 
   state[input]="${state[input]}$hint"
-  state[action]="$action"
+  state[modifier]="$modifier"
+}
+
+function run_shell_action() {
+  local command_to_run="$1"
+
+  tmux run-shell -b "export MODIFIER=\"${state[modifier]}\" HINT=\"${state[hint]}\" && printf \"${state[result]}\" | $EXEC_PREFIX $command_to_run"
+}
+
+function run_action() {
+  action_variable="FINGERS_$(echo "${state[modifier]}" | tr '[:lower:]' '[:upper:]')_ACTION"
+  action="$(eval "echo \$$action_variable")"
+
+  if [[ -z "$action" ]]; then
+    return
+  fi
+
+  if [[ "$action" == ":open:" ]]; then
+    run_shell_action "xargs xdg-open"
+  elif [[ "$action" == ":paste:" ]]; then
+    tmux paste-buffer
+  else
+    run_shell_action "$action"
+  fi
 }
 
 function handle_exit() {
-  log "[fingers-mode] handling exit"
   revert_to_original_pane
+
+  run_action
+
   # TODO run action
   rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
 
@@ -128,7 +153,6 @@ function handle_exit() {
   tmux set-window-option key-table root
   tmux switch-client -Troot
   cat /dev/null > /tmp/fingers-command-queue
-  log "[fingers-mode] exited"
   tmux kill-window -t "$fingers_window_id"
 }
 
@@ -149,9 +173,8 @@ function read_statement() {
 state[show_help]=0
 state[compact_mode]="$FINGERS_COMPACT_HINTS"
 state[input]=''
-state[action]=''
+state[modifier]=''
 
-trap "handle_exit" EXIT
 
 hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
@@ -160,7 +183,7 @@ enable_fingers_mode
 touch /tmp/fingers-command-queue
 cat /dev/null > /tmp/fingers-command-queue
 
-tail -f /tmp/fingers-command-queue | while read -r -s statement
+while read -r -s statement
 do
   tmux display-message "$statement"
 
@@ -199,11 +222,13 @@ do
 
   input="${state[input]}"
 
-  result=$(lookup_match "$input")
+  state[result]=$(lookup_match "$input")
 
-  if [[ -n $result ]]; then
-    tmux display-message "copying result $result ( action: ${state[action]} )"
-    copy_result "$result" "$input"
-    exit 0
+  if [[ -n "${state[result]}" ]]; then
+    copy_result
+    break
   fi
-done
+done < <(tail -f /tmp/fingers-command-queue)
+
+trap "handle_exit" EXIT
+exit 0
