@@ -2,6 +2,8 @@
 
 eval "$(tmux show-env -g -s | grep ^FINGERS)"
 
+tmux set-window-option automatic-rename off
+
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source $CURRENT_DIR/hints.sh
@@ -151,11 +153,17 @@ function handle_exit() {
   # TODO run action
   rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
 
-  # TODO actually switch to previous mode, or remove auto-switching from plugin init
+  # TODO restore options to their previous state, not the default
+
+  # TODO fuu, not unsetting?
+  tmux set-hook -u pane-focus-in
+  tmux set-hook -u pane-focus-out
 
   tmux set-window-option key-table root
   tmux switch-client -Troot
+
   cat /dev/null > /tmp/fingers-command-queue
+
   tmux kill-window -t "$fingers_window_id"
 }
 
@@ -178,7 +186,6 @@ state[compact_mode]="$FINGERS_COMPACT_HINTS"
 state[input]=''
 state[modifier]=''
 
-
 hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
 enable_fingers_mode
@@ -186,10 +193,14 @@ enable_fingers_mode
 touch /tmp/fingers-command-queue
 cat /dev/null > /tmp/fingers-command-queue
 
+# TODO require it in README or something?
+tmux set -g focus-events on
+
+tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
+tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
+
 while read -r -s statement
 do
-  tmux display-message "$statement"
-
   track_state
 
   case $statement in
