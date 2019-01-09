@@ -72,7 +72,6 @@ function revert_to_original_pane() {
 }
 
 # TODO capture settings ( pane was zoomed, rename setting, bla bla ) in assoc-array and restore them on exit
-# TODO assoc-array with state
 compact_state=$FINGERS_COMPACT_HINTS
 
 declare -A state=()
@@ -150,7 +149,6 @@ function handle_exit() {
 
   run_action
 
-  # TODO run action
   rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
 
   # TODO restore options to their previous state, not the default
@@ -204,7 +202,6 @@ do
   track_state
 
   case $statement in
-    # TODO maybe different key tables for fingers-help and show/hide help statements
     toggle-help)
       toggle_state "show_help"
       ;;
