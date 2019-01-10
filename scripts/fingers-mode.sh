@@ -21,6 +21,21 @@ original_rename_setting=$6
 HAS_TMUX_YANK=$([ "$(tmux list-keys | grep -c tmux-yank)" == "0" ]; echo $?)
 tmux_yank_copy_command=$(tmux_list_vi_copy_keys | grep -E "(vi-copy|copy-mode-vi) *y" | sed -E 's/.*copy-pipe(-and-cancel)? *"(.*)".*/\2/g')
 
+function is_pane_zoomed() {
+  local pane_id=$1
+
+  tmux list-panes \
+    -F "#{pane_id}:#{?pane_active,active,nope}:#{?window_zoomed_flag,zoomed,nope}" \
+    | grep -c "^${pane_id}:active:zoomed$"
+}
+
+function zoom_pane() {
+  local pane_id=$1
+
+  tmux resize-pane -Z -t "$pane_id"
+}
+
+
 function enable_fingers_mode () {
   tmux set-window-option key-table fingers
   tmux switch-client -T fingers
@@ -67,8 +82,8 @@ function revert_to_original_pane() {
     tmux select-pane -t "$current_pane_id"
   fi
 
-  [[ $pane_was_zoomed == "1" ]] && zoom_pane "$current_pane_id"
-
+  # FIXME tiny flicker
+  [[ "${state[pane_was_zoomed]}" == "1" ]] && zoom_pane "$current_pane_id"
 }
 
 # TODO capture settings ( pane was zoomed, rename setting, bla bla ) in assoc-array and restore them on exit
@@ -179,6 +194,7 @@ function read_statement() {
   export statement
 }
 
+state[pane_was_zoomed]=$(is_pane_zoomed "$current_pane_id")
 state[show_help]=0
 state[compact_mode]="$FINGERS_COMPACT_HINTS"
 state[input]=''
@@ -186,6 +202,7 @@ state[modifier]=''
 
 hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
+[[ "${state[pane_was_zoomed]}" == "1" ]] && zoom_pane "$fingers_pane_id"
 enable_fingers_mode
 
 touch /tmp/fingers-command-queue
