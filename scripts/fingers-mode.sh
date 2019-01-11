@@ -214,6 +214,8 @@ tmux set -g focus-events on
 tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
 tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
 
+# %BENCHMARK_END%
+
 while read -r -s statement
 do
   track_state
