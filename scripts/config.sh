@@ -95,6 +95,8 @@ fingers_defaults=( \
   [fingers-hint-format-nocompact]="#[fg=yellow,bold][%s]" \
   [fingers-highlight-format-nocompact]="#[fg=yellow,nobold,dim]%s" \
 
+  [fingers-keyboard-layout]="qwerty" \
+
   [fingers-shift-action]=":open:" \
   [fingers-ctrl-action]=":paste:" \
   [fingers-alt-action]="" \
@@ -104,6 +106,8 @@ set_tmux_env 'fingers-patterns'
 set_tmux_env 'fingers-compact-hints'
 set_tmux_env 'fingers-copy-command'
 set_tmux_env 'fingers-copy-command-uppercase'
+
+set_tmux_env 'fingers-keyboard-layout'
 
 set_tmux_env 'fingers-shift-action'
 set_tmux_env 'fingers-ctrl-action'
