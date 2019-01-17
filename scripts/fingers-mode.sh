@@ -39,6 +39,8 @@ function zoom_pane() {
 function enable_fingers_mode () {
   tmux set-window-option key-table fingers
   tmux switch-client -T fingers
+  state[tmux_prefix]="$(tmux show -gqv prefix)"
+  tmux set-option -g prefix None
 }
 
 function hide_cursor() {
@@ -167,6 +169,7 @@ function handle_exit() {
   rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
 
   # TODO restore options to their previous state, not the default
+  tmux set-option -g prefix "${state[tmux_prefix]}"
 
   # TODO fuu, not unsetting?
   tmux set-hook -u pane-focus-in
