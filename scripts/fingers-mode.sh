@@ -234,7 +234,7 @@ do
     hint:*)
       accept_hint "$statement"
     ;;
-    continue)
+    noop)
       continue
     ;;
     exit)
