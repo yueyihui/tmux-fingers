@@ -206,17 +206,77 @@ state[modifier]=''
 hide_cursor
 show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
 [[ "${state[pane_was_zoomed]}" == "1" ]] && zoom_pane "$fingers_pane_id"
-enable_fingers_mode
 
 touch /tmp/fingers-command-queue
 echo "exit" >> /tmp/fingers-command-queue
 cat /dev/null > /tmp/fingers-command-queue
 
-# TODO require it in README or something?
-tmux set -g focus-events on
 
-tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
-tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
+# TODO require it in README or something?
+#enable_fingers_mode
+#tmux set -g focus-events on
+#tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
+#tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
+
+
+(
+  function is_valid_input() {
+    local input=$1
+    local is_valid=1
+
+    if [[ $input == "" ]] || [[ $input == "<ESC>" ]] || [[ $input == "?" ]]; then
+      is_valid=1
+    else
+      for (( i=0; i<${#input}; i++ )); do
+        char=${input:$i:1}
+
+        if [[ ! $(is_alpha $char) == "1" ]]; then
+          is_valid=0
+          break
+        fi
+      done
+    fi
+
+    echo $is_valid
+  }
+
+  while read -rsn1 char; do
+    # Escape sequence, flush input
+    if [[ "$char" == $'\x1b' ]]; then
+      read -rsn1 -t 0.1 next_char
+
+      if [[ "$next_char" == "[" ]]; then
+        read -rsn1 -t 0.1
+        continue
+      elif [[ "$next_char" == "" ]]; then
+        char="<ESC>"
+      else
+        continue
+      fi
+
+    fi
+
+    if [[ ! $(is_valid_input "$char") == "1" ]]; then
+      continue
+    fi
+
+    is_uppercase=$(echo "$char" | grep -E '^[a-z]+$' &> /dev/null; echo $?)
+
+    if [[ $char == "$BACKSPACE" ]]; then
+      continue
+    elif [[ $char == "<ESC>" ]]; then
+      echo "exit" >> /tmp/fingers-command-queue
+    elif [[ $char == "q" ]]; then
+      echo "exit" >> /tmp/fingers-command-queue
+    elif [[ $char == "?" ]]; then
+      echo "toggle-help" >> /tmp/fingers-command-queue
+    elif [[ $is_uppercase == "1" ]]; then
+      echo "hint:$char:shift" >> /tmp/fingers-command-queue
+    else
+      echo "hint:$char:main" >> /tmp/fingers-command-queue
+    fi
+  done < /dev/tty
+) &
 
 # %BENCHMARK_END%
 
