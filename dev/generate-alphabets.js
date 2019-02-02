@@ -68,7 +68,7 @@ async function main() {
 
       spit({
         path: outputPath,
-        hints
+        hints: hints.reverse()
       })
     })
   })
