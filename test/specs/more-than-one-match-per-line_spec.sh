@@ -13,7 +13,7 @@ tmuxomatic__exec "cat ./test/fixtures/ip-output"
 sleep 1.0
 invoke_fingers
 
-tmuxomatic send-keys "r"
+tmuxomatic send-keys "p"
 echo_yanked
 
 tmuxomatic__expect "yanked text is 10.0.3.1"

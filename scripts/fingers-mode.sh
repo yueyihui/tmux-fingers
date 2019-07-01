@@ -35,7 +35,6 @@ function zoom_pane() {
   tmux resize-pane -Z -t "$pane_id"
 }
 
-
 function enable_fingers_mode () {
   tmux set-window-option key-table fingers
   tmux switch-client -T fingers
@@ -162,6 +161,7 @@ function run_action() {
 }
 
 function handle_exit() {
+  log "[fingers-mode] handle exit"
   revert_to_original_pane
 
   run_action
@@ -197,6 +197,8 @@ function read_statement() {
   export statement
 }
 
+trap "handle_exit" EXIT
+
 state[pane_was_zoomed]=$(is_pane_zoomed "$current_pane_id")
 state[show_help]=0
 state[compact_mode]="$FINGERS_COMPACT_HINTS"
@@ -218,71 +220,14 @@ cat /dev/null > /tmp/fingers-command-queue
 #tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
 #tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
 
-
-(
-  function is_valid_input() {
-    local input=$1
-    local is_valid=1
-
-    if [[ $input == "" ]] || [[ $input == "<ESC>" ]] || [[ $input == "?" ]]; then
-      is_valid=1
-    else
-      for (( i=0; i<${#input}; i++ )); do
-        char=${input:$i:1}
-
-        if [[ ! $(is_alpha $char) == "1" ]]; then
-          is_valid=0
-          break
-        fi
-      done
-    fi
-
-    echo $is_valid
-  }
-
-  while read -rsn1 char; do
-    # Escape sequence, flush input
-    if [[ "$char" == $'\x1b' ]]; then
-      read -rsn1 -t 0.1 next_char
-
-      if [[ "$next_char" == "[" ]]; then
-        read -rsn1 -t 0.1
-        continue
-      elif [[ "$next_char" == "" ]]; then
-        char="<ESC>"
-      else
-        continue
-      fi
-
-    fi
-
-    if [[ ! $(is_valid_input "$char") == "1" ]]; then
-      continue
-    fi
-
-    is_uppercase=$(echo "$char" | grep -E '^[a-z]+$' &> /dev/null; echo $?)
-
-    if [[ $char == "$BACKSPACE" ]]; then
-      continue
-    elif [[ $char == "<ESC>" ]]; then
-      echo "exit" >> /tmp/fingers-command-queue
-    elif [[ $char == "q" ]]; then
-      echo "exit" >> /tmp/fingers-command-queue
-    elif [[ $char == "?" ]]; then
-      echo "toggle-help" >> /tmp/fingers-command-queue
-    elif [[ $is_uppercase == "1" ]]; then
-      echo "hint:$char:shift" >> /tmp/fingers-command-queue
-    else
-      echo "hint:$char:main" >> /tmp/fingers-command-queue
-    fi
-  done < /dev/tty
-) &
-
+($CURRENT_DIR/fingers-legacy-input.sh) &
 # %BENCHMARK_END%
 
 while read -r -s statement
 do
   track_state
+
+  log "[fingers-mode] received statement $statement"
 
   case $statement in
     toggle-help)
@@ -322,7 +267,9 @@ do
     copy_result
     break
   fi
+
+  log "[fingers-mode] waiting for moar statements"
 done < <(tail -f /tmp/fingers-command-queue)
 
-trap "handle_exit" EXIT
+log "[fingers-mode] about to exit"
 exit 0

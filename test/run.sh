@@ -22,6 +22,9 @@ if [[ "$target" == "within-vm" ]]; then
   for version in "${VERSIONS[@]}"; do
     $CURRENT_DIR/use-tmux.sh "$version"
     echo "Running tests in tmux $version"
+
+    pgrep tmux | xargs kill -9
+
     for test_file in $(ls $CURRENT_DIR/specs/*_spec.sh); do
       result="* $test_file ..."
       sleep 1
