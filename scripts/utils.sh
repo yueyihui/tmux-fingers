@@ -167,7 +167,6 @@ function version_minor() {
   echo "$1" | cut -f2 -d. | grep -Eo "[0-9]"
 }
 
-
 function get_tmux_version() {
   echo "$(tmux -V | grep -Eio "([0-9]+(\.[0-9]))(?:-rc)?")"
 }

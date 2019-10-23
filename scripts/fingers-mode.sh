@@ -17,6 +17,7 @@ last_pane_id=$3
 fingers_window_id=$4
 pane_input_temp=$5
 original_rename_setting=$6
+input_method=$7
 
 HAS_TMUX_YANK=$([ "$(tmux list-keys | grep -c tmux-yank)" == "0" ]; echo $?)
 tmux_yank_copy_command=$(tmux_list_vi_copy_keys | grep -E "(vi-copy|copy-mode-vi) *y" | sed -E 's/.*copy-pipe(-and-cancel)? *"(.*)".*/\2/g')
@@ -36,6 +37,7 @@ function zoom_pane() {
 }
 
 function enable_fingers_mode () {
+  log "enabling fingers mode"
   tmux set-window-option key-table fingers
   tmux switch-client -T fingers
   state[tmux_prefix]="$(tmux show -gqv prefix)"
@@ -215,12 +217,17 @@ cat /dev/null > /tmp/fingers-command-queue
 
 
 # TODO require it in README or something?
-#enable_fingers_mode
-#tmux set -g focus-events on
-#tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
-#tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
 
-($CURRENT_DIR/fingers-legacy-input.sh) &
+log "input method? $input_method"
+if [[ $input_method == "fingers-mode" ]]; then
+  tmux set -g focus-events on
+  tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
+  tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
+  enable_fingers_mode
+else
+  ($CURRENT_DIR/fingers-legacy-input.sh) &
+fi
+
 # %BENCHMARK_END%
 
 while read -r -s statement
