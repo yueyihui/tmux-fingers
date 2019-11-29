@@ -16,7 +16,7 @@ fingers_pane_id=$2
 last_pane_id=$3
 fingers_window_id=$4
 pane_input_temp=$5
-original_rename_setting=$6
+original_window_name=$6
 input_method=$7
 
 HAS_TMUX_YANK=$([ "$(tmux list-keys | grep -c tmux-yank)" == "0" ]; echo $?)
@@ -78,18 +78,17 @@ function run_fingers_copy_command() {
 
 function revert_to_original_pane() {
   tmux swap-pane -s "$current_pane_id" -t "$fingers_pane_id"
-  tmux set-window-option automatic-rename "$original_rename_setting"
+  tmux rename-window "$original_window_name"
 
   if [[ ! -z "$last_pane_id" ]]; then
     tmux select-pane -t "$last_pane_id"
     tmux select-pane -t "$current_pane_id"
   fi
 
-  # FIXME tiny flicker
+  # FIXME tiny flicker?
   [[ "${state[pane_was_zoomed]}" == "1" ]] && zoom_pane "$current_pane_id"
 }
 
-# TODO capture settings ( pane was zoomed, rename setting, bla bla ) in assoc-array and restore them on exit
 compact_state=$FINGERS_COMPACT_HINTS
 
 declare -A state=()
@@ -168,14 +167,9 @@ function handle_exit() {
 
   run_action
 
-  rm -rf "$pane_input_temp" "$pane_output_temp" "$match_lookup_table"
+  rm -rf "$pane_input_temp"
 
-  # TODO restore options to their previous state, not the default
   tmux set-option -g prefix "${state[tmux_prefix]}"
-
-  # TODO fuu, not unsetting?
-  tmux set-hook -u pane-focus-in
-  tmux set-hook -u pane-focus-out
 
   tmux set-window-option key-table root
   tmux switch-client -Troot
@@ -215,14 +209,7 @@ touch /tmp/fingers-command-queue
 echo "exit" >> /tmp/fingers-command-queue
 cat /dev/null > /tmp/fingers-command-queue
 
-
-# TODO require it in README or something?
-
-log "input method? $input_method"
 if [[ $input_method == "fingers-mode" ]]; then
-  tmux set -g focus-events on
-  tmux set-hook pane-focus-in "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"in\" \"$fingers_pane_id\"'"
-  tmux set-hook pane-focus-out "run-shell -b '$CURRENT_DIR/focus-hooks.sh \"out\" \"$fingers_pane_id\"'"
   enable_fingers_mode
 else
   ($CURRENT_DIR/fingers-legacy-input.sh) &
@@ -233,8 +220,6 @@ fi
 while read -r -s statement
 do
   track_state
-
-  log "[fingers-mode] received statement $statement"
 
   case $statement in
     toggle-help)
@@ -274,9 +259,6 @@ do
     copy_result
     break
   fi
-
-  log "[fingers-mode] waiting for moar statements"
 done < <(tail -f /tmp/fingers-command-queue)
 
-log "[fingers-mode] about to exit"
 exit 0
