@@ -1,12 +1,10 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source $CURRENT_DIR/utils.sh
-source $CURRENT_DIR/debug.sh
 
 function handle_exit() {
   echo "exit" >> /tmp/fingers-command-queue
   cat /dev/null > /tmp/fingers-command-queue
-  log "[legacy] exit"
 }
 
 trap "handle_exit" EXIT

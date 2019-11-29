@@ -9,7 +9,6 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $CURRENT_DIR/hints.sh
 source $CURRENT_DIR/utils.sh
 source $CURRENT_DIR/help.sh
-source $CURRENT_DIR/debug.sh
 
 current_pane_id=$1
 fingers_pane_id=$2
@@ -37,7 +36,6 @@ function zoom_pane() {
 }
 
 function enable_fingers_mode () {
-  log "enabling fingers mode"
   tmux set-window-option key-table fingers
   tmux switch-client -T fingers
   state[tmux_prefix]="$(tmux show -gqv prefix)"
@@ -162,12 +160,12 @@ function run_action() {
 }
 
 function handle_exit() {
-  log "[fingers-mode] handle exit"
   revert_to_original_pane
 
   run_action
 
-  rm -rf "$pane_input_temp"
+  # exported from scripts/hints.sh
+  rm -rf "$pane_input_temp" "$match_lookup_table" "$pane_output_temp" /tmp/fingers-command-queue
 
   tmux set-option -g prefix "${state[tmux_prefix]}"
 
