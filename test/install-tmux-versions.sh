@@ -12,7 +12,7 @@ sudo chmod a+w /opt
 pushd /tmp
   for version in "${VERSIONS[@]}";
   do
-    if [[ -f "/opt/tmux-${version}" ]]; then
+    if [[ -d "/opt/tmux-${version}" ]]; then
       continue
     fi
 
