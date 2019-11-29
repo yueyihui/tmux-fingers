@@ -10,7 +10,7 @@ DEFAULT_FINGERS_KEY="F"
 FINGERS_KEY=$(tmux show-option -gqv @fingers-key)
 FINGERS_KEY=${FINGERS_KEY:-$DEFAULT_FINGERS_KEY}
 
-TMUX_VERSION=$(tmux_version)
+TMUX_VERSION=$(get_tmux_version)
 
 input_method=""
 if [[ $(version_major "$TMUX_VERSION") -ge "2" ]] && \
