@@ -115,8 +115,11 @@ PATTERNS=$(array_join "|" "${PATTERNS_LIST[@]}")
 fingers_defaults=( \
   [fingers-patterns]="$PATTERNS" \
   [fingers-compact-hints]=1 \
-  [fingers-copy-command]="$(default_copy_command)" \
-  [fingers-copy-command-uppercase]="$(default_open_command)" \
+
+  [fingers-main-action]=":copy:" \
+  [fingers-ctrl-action]=":open:" \
+  [fingers-shift-action]=":paste:" \
+  [fingers-alt-action]="" \
 
   [fingers-hint-position]="left" \
   [fingers-hint-format]="#[fg=yellow,bold]%s" \
@@ -127,19 +130,27 @@ fingers_defaults=( \
   [fingers-highlight-format-nocompact]="#[fg=yellow,nobold,dim]%s" \
 
   [fingers-keyboard-layout]="qwerty" \
-  [fingers-shift-action]=":open:" \
-  [fingers-ctrl-action]=":paste:" \
-  [fingers-alt-action]="" \
+
+  [fingers-system-copy-command]="$(default_copy_command)" \
+  [fingers-system-open-command]="$(default_open_command)" \
+
+  # TODO deprecated options
+  [fingers-copy-command]="DEPRECATED" \
+  [fingers-copy-command-uppercase]="DEPRECATED" \
 )
 
 set_tmux_env 'fingers-patterns'
 set_tmux_env 'fingers-compact-hints'
-set_tmux_env 'fingers-copy-command'
-set_tmux_env 'fingers-copy-command-uppercase'
+set_tmux_env 'fingers-copy-command' # DEPRECATED
+set_tmux_env 'fingers-copy-command-uppercase' # DEPRECATED
 
-set_tmux_env 'fingers-shift-action'
+set_tmux_env 'fingers-main-action'
 set_tmux_env 'fingers-ctrl-action'
+set_tmux_env 'fingers-shift-action'
 set_tmux_env 'fingers-alt-action'
+
+set_tmux_env 'fingers-system-copy-command'
+set_tmux_env 'fingers-system-open-command'
 
 set_tmux_env 'fingers-hint-position'
 set_tmux_env 'fingers-hint-format' process_format

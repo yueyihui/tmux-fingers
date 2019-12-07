@@ -81,8 +81,10 @@ NOTE: for changes to take effect, you'll need to source again your `.tmux.conf` 
 
 * [@fingers-key](#fingers-key)
 * [@fingers-patterns-N](#fingers-patterns-N)
-* [@fingers-copy-command](#fingers-copy-command)
-* [@fingers-copy-command-uppercase](#fingers-copy-command-uppercase)
+* [@fingers-main-action](#fingers-main-action)
+* [@fingers-ctrl-action](#fingers-ctrl-action)
+* [@fingers-shift-action](#fingers-shift-action)
+* [@fingers-alt-action](#fingers-alt-action)
 * [@fingers-compact-hints](#fingers-compact-hints)
 * [@fingers-hint-position](#fingers-hint-position)
 * [@fingers-hint-position-nocompact](#fingers-hint-position-nocompact)
@@ -90,6 +92,8 @@ NOTE: for changes to take effect, you'll need to source again your `.tmux.conf` 
 * [@fingers-hint-format-nocompact](#fingers-hint-format-nocompact)
 * [@fingers-highlight-format](#fingers-highlight-format)
 * [@fingers-highlight-format-nocompact](#fingers-highlight-format-nocompact)
+* deprecated: [@fingers-copy-command](#fingers-copy-command)
+* deprecated: [@fingers-copy-command-uppercase](#fingers-copy-command-uppercase)
 
 ## @fingers-key
 
@@ -122,45 +126,55 @@ Patterns are case insensitive, and grep's extended syntax ( ERE ) should be used
 If the introduced regexp contains an error, an error will be shown when
 invoking the plugin.
 
-## @fingers-copy-command
+## @fingers-main-action
 
-`default: NONE`
+`default: copy`
 
-By default **tmux-fingers** will just yank matches using tmux clipboard. For
-system clipboard integration you'll also need to install
-[tmux-yank](https://github.com/tmux-plugins/tmux-yank).
-
+By default **tmux-fingers** will copy matches in tmux and system clipboard.
 
 If you still want to set your own custom command you can do so like this:
 
 ```
-set -g @fingers-copy-command 'xclip -selection clipboard'
+set -g @fingers-main-action '<your command here>'
 ```
-
 This command will also receive the following:
 
-  * `IS_UPPERCASE`: environment variable set to `1` or `0` depending on how the hint was introduced.
+  * `MODIFIER`: environment variable set to `ctrl`, `alt`, or `shift` specififying which modifier was used when selecting the match.
   * `HINT`: environment variable the selected letter hint itself ( ex: `q`, `as`, etc... ).
   * `stdin`: copied text will be piped to `@fingers-copy-command`.
 
+You can also use the following special values:
+
+* `:paste:` Copy the the match and paste it automatically.
+* `:copy:` Uses built-in system clipboard integration to copy the match.
+* `:open:` Uses built-in open file integration to open the file ( opens URLs in default browser, files in OS file navigator, etc ).
+
+## @fingers-ctrl-action
+
+`default: :paste:`
+
+Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>ctrl</kbd>
+
+This option requires `tmux 2.8` or higher.
+
+## @fingers-shift-action
+
+`default: :open:`
+
+Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>shift</kbd>
+
+## @fingers-alt-action
+
+Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>alt</kbd>
+
+## @fingers-copy-command
+
+_DEPRECATED: this option is deprecated, please use [@fingers-main-action](#fingers-main-action) instead_
+
+
 ## @fingers-copy-command-uppercase
 
-`default: NONE`
-
-Same as [@fingers-copy-command](#fingers-copy-command) but it's only triggered
-when input is introduced in uppercase letters.
-
-For example, this open links in browser when holding <kbd>SHIFT</kbd> while selecting the hint:
-
-```
-set -g @fingers-copy-command-uppercase 'xargs xdg-open'
-```
-
-Or, for automatically pasting:
-
-```
-set -g @fingers-copy-command-uppercase 'tmux paste-buffer'
-```
+_DEPRECATED: this option is deprecated, please use [@fingers-shift-action](#fingers-shift-action) instead_
 
 ## @fingers-compact-hints
 

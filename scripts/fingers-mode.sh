@@ -18,9 +18,6 @@ pane_input_temp=$5
 original_window_name=$6
 input_method=$7
 
-HAS_TMUX_YANK=$([ "$(tmux list-keys | grep -c tmux-yank)" == "0" ]; echo $?)
-tmux_yank_copy_command=$(tmux_list_vi_copy_keys | grep -E "(vi-copy|copy-mode-vi) *y" | sed -E 's/.*copy-pipe(-and-cancel)? *"(.*)".*/\2/g')
-
 function is_pane_zoomed() {
   local pane_id=$1
 
@@ -51,27 +48,6 @@ function copy_result() {
   local hint="${state[hint]}"
 
   tmux set-buffer "$result"
-
-  if [[ $HAS_TMUX_YANK = 1 ]]; then
-    tmux run-shell -b "printf \"$result\" | $EXEC_PREFIX $tmux_yank_copy_command"
-  fi
-}
-
-function run_fingers_copy_command() {
-  local result="$1"
-  local hint="$2"
-
-  is_uppercase=$(echo "$input" | grep -E '^[a-z]+$' &> /dev/null; echo $?)
-
-  if [[ $is_uppercase == "1" ]] && [ ! -z "$FINGERS_COPY_COMMAND_UPPERCASE" ]; then
-    command_to_run="$FINGERS_COPY_COMMAND_UPPERCASE"
-  elif [ ! -z "$FINGERS_COPY_COMMAND" ]; then
-    command_to_run="$FINGERS_COPY_COMMAND"
-  fi
-
-  if [[ ! -z "$command_to_run" ]]; then
-    tmux run-shell -b "export IS_UPPERCASE=\"$is_uppercase\" HINT=\"$hint\" && printf \"$result\" | $EXEC_PREFIX $command_to_run"
-  fi
 }
 
 function revert_to_original_pane() {
@@ -143,7 +119,7 @@ function run_shell_action() {
 }
 
 function run_action() {
-  action_variable="FINGERS_$(echo "${state[modifier]}" | tr '[:lower:]' '[:upper:]')_ACTION"
+  action_variable="FINGERS_$(echo "${state[modifier]}_ACTION" | tr '[:lower:]' '[:upper:]')"
   action="$(eval "echo \$$action_variable")"
 
   if [[ -z "$action" ]]; then
@@ -151,7 +127,9 @@ function run_action() {
   fi
 
   if [[ "$action" == ":open:" ]]; then
-    run_shell_action "xargs xdg-open"
+    run_shell_action "$FINGERS_SYSTEM_OPEN_COMMAND"
+  elif [[ "$action" == ":copy:" ]]; then
+    run_shell_action "$FINGERS_SYSTEM_COPY_COMMAND"
   elif [[ "$action" == ":paste:" ]]; then
     tmux paste-buffer
   else
