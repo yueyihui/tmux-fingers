@@ -16,6 +16,10 @@ function tmuxomatic__exec() {
   tmuxomatic send-keys Enter
 }
 
+function tmuxomatic__skip() {
+  exit 2
+}
+
 function tmuxomatic__begin() {
   tmuxomatic list-sessions &> /dev/null
 

@@ -33,15 +33,17 @@ if [[ "$target" == "within-vm" ]]; then
       while [[ $tries -lt $MAX_RETRIES ]]; do
         echo "Running $test_file" >> $SPEC_OUTPUT_LOG
         $test_file &>> $TEST_LOG
-        success=$?
+        exit_code=$?
 
-        if [[ $success ]]; then
+        if [[ $exit_code ]]; then
           break
         fi
       done
 
-      if [[ $success ]]; then
+      if [[ $exit_code -eq 0 ]]; then
         result="$result OK"
+      elif [[ $exit_code -eq 2 ]]; then
+        result="$result SKIP"
       else
         fail_count=$((fail_count + 1))
         result="$result FAIL"

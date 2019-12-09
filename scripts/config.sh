@@ -72,6 +72,7 @@ function default_copy_command () {
 }
 
 function default_open_command () {
+  # TODO open is OSX only I think
   if [[ $(program_exists "open") = "1" ]]; then
     echo "xargs open"
   elif [[ $(program_exists "xdg-open") = "1" ]]; then

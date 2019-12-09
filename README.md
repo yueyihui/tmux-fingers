@@ -37,7 +37,9 @@ While in **[fingers]** mode, you can use the following shortcuts:
 
 # Requirements
 
-* tmux 2.1+ ( 2.2 recommended )
+<!--TODO are we sure about 2.1 and 2.2 ?-->
+
+* tmux 2.1+ ( 2.8 recommended )
 * bash 4+
 * gawk
 
@@ -83,8 +85,8 @@ NOTE: for changes to take effect, you'll need to source again your `.tmux.conf` 
 * [@fingers-patterns-N](#fingers-patterns-N)
 * [@fingers-main-action](#fingers-main-action)
 * [@fingers-ctrl-action](#fingers-ctrl-action)
-* [@fingers-shift-action](#fingers-shift-action)
 * [@fingers-alt-action](#fingers-alt-action)
+* [@fingers-shift-action](#fingers-shift-action)
 * [@fingers-compact-hints](#fingers-compact-hints)
 * [@fingers-hint-position](#fingers-hint-position)
 * [@fingers-hint-position-nocompact](#fingers-hint-position-nocompact)
@@ -128,7 +130,7 @@ invoking the plugin.
 
 ## @fingers-main-action
 
-`default: copy`
+`default: :copy:`
 
 By default **tmux-fingers** will copy matches in tmux and system clipboard.
 
@@ -151,26 +153,27 @@ You can also use the following special values:
 
 ## @fingers-ctrl-action
 
-`default: :paste:`
+`default: :open:`
 
 Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>ctrl</kbd>
 
 This option requires `tmux 2.8` or higher.
 
-## @fingers-shift-action
-
-`default: :open:`
-
-Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>shift</kbd>
-
 ## @fingers-alt-action
 
 Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>alt</kbd>
 
+This option requires `tmux 2.8` or higher.
+
+## @fingers-shift-action
+
+`default: :paste:`
+
+Same as [@fingers-main-action](#fingers-main-action) but only called when match is selected by holding <kbd>shift</kbd>
+
 ## @fingers-copy-command
 
 _DEPRECATED: this option is deprecated, please use [@fingers-main-action](#fingers-main-action) instead_
-
 
 ## @fingers-copy-command-uppercase
 
@@ -214,7 +217,6 @@ and `"right"`.
 
 ## @fingers-hint-position-nocompact
 
-
 `default: "right"`
 
 Same as above, used when `@fingers-compact-hints` is set to `0`.
@@ -223,7 +225,9 @@ Same as above, used when `@fingers-compact-hints` is set to `0`.
 
 `default: "#[fg=yellow,bold]%s"`
 
-You can customize the colors using the same syntax used in `.tmux.conf` for styling the status bar. You'll need to include the `%s` placeholder in your custom format, that's where the content will be rendered.
+You can customize the colors using the same syntax used in `.tmux.conf` for
+styling the status bar. You'll need to include the `%s` placeholder in your
+custom format, that's where the content will be rendered.
 
 Check all supported features [here](https://github.com/morantron/tmux-printer).
 
