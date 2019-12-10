@@ -115,7 +115,9 @@ function accept_hint() {
 function run_shell_action() {
   local command_to_run="$1"
 
-  tmux run-shell -b "export MODIFIER=\"${state[modifier]}\" HINT=\"${state[hint]}\" && printf \"${state[result]}\" | $EXEC_PREFIX $command_to_run"
+  if [[ ! -z $command_to_run ]]; then
+    tmux run-shell -b "export MODIFIER=\"${state[modifier]}\" HINT=\"${state[hint]}\" && printf \"${state[result]}\" | $EXEC_PREFIX $command_to_run"
+  fi
 }
 
 function run_action() {

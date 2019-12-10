@@ -3,7 +3,7 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 sudo aptitude update
-sudo aptitude install -y fish gawk xvfb perl xdg-utils
+sudo aptitude install -y fish gawk xvfb perl xdg-utils xsel
 
 sudo useradd -m -p "$(perl -e "print crypt('fishman','sa');")" -s "/usr/bin/fish" fishman
 
