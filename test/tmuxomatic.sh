@@ -31,11 +31,11 @@ function tmuxomatic__begin() {
 
     tmux_version=$(get_tmux_version)
 
-    if [[ $(version_major "$tmux_version") -ge "2" ]] && [[ $(version_minor "$tmux_version") -lt "9" ]]; then
+    if [[ $(version_compare_ge "$tmux_version" "2.9") == 1 ]]; then
+      tmuxomatic resize-window -x 80 -y 24
+    else
       tmuxomatic set-window-option force-width 80
       tmuxomatic set-window-option force-height 24
-    else
-      tmuxomatic resize-window -x 80 -y 24
     fi
 
     tmuxomatic__exec "export TMUX=''"
