@@ -13,8 +13,7 @@ FINGERS_KEY=${FINGERS_KEY:-$DEFAULT_FINGERS_KEY}
 TMUX_VERSION=$(get_tmux_version)
 
 input_method=""
-if [[ $(version_major "$TMUX_VERSION") -ge "2" ]] && \
-  [[ $(version_minor "$TMUX_VERSION") -ge "8" ]];
+if [[ $(version_compare_ge "$(get_tmux_version)" "2.8") == "1" ]]
 then
   input_method="fingers-mode"
   tmux run -b "bash $THIS_CURRENT_DIR/scripts/setup-fingers-mode-bindings.sh"
