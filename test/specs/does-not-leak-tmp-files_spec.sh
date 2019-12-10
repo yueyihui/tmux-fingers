@@ -9,8 +9,6 @@ tmuxomatic__begin begin_hook
 begin_with_conf "basic"
 init_pane
 
-tmp_files_before=$(sudo ls -l /tmp/* | grep -v fingers-stub-output | wc -l)
-
 tmuxomatic__exec "cat ./test/fixtures/grep-output"
 invoke_fingers
 tmuxomatic send-keys "a"
@@ -22,9 +20,9 @@ tmuxomatic send-keys "C-c"
 
 sleep 1
 
-tmp_files_after=$(sudo ls -l /tmp/* | grep -v fingers-stub-output | wc -l)
+tmp_files_after=$(sudo ls -l /tmp/* | grep fingers | grep -v fingers-stub-output | wc -l)
 
-if [[ "$tmp_files_before" == "$tmp_files_after" ]]; then
+if [[ "$tmp_files_after" -eq 0 ]]; then
   TMUXOMATIC_EXIT_CODE=0
 else
   TMUXOMATIC_EXIT_CODE=1
