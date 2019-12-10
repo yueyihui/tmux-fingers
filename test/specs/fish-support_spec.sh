@@ -4,8 +4,6 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $CURRENT_DIR/../tmuxomatic.sh
 source $CURRENT_DIR/../helpers.sh
 
-tmuxomatic__skip
-
 tmuxomatic__begin begin_hook
 
 tmuxomatic__exec "sudo su - fishman"
