@@ -38,9 +38,15 @@ if [[ "$target" == "within-vm" ]]; then
         $test_file &>> $TEST_LOG
         exit_code=$?
 
-        if [[ $exit_code ]]; then
+        if [[ $exit_code -eq 0 ]]; then
           break
         fi
+
+        if [[ $exit_code -eq 2 ]]; then
+          break
+        fi
+
+        tries=$((tries + 1))
       done
 
       if [[ $exit_code -eq 0 ]]; then
