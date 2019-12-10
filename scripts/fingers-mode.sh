@@ -183,6 +183,8 @@ show_hints_and_swap "$current_pane_id" "$fingers_pane_id" "$compact_state"
 [[ "${state[pane_was_zoomed]}" == "1" ]] && zoom_pane "$fingers_pane_id"
 
 touch /tmp/fingers-command-queue
+chmod a+w /tmp/fingers-command-queue
+
 echo "exit" >> /tmp/fingers-command-queue
 cat /dev/null > /tmp/fingers-command-queue
 

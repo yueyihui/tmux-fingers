@@ -18,7 +18,7 @@ tmuxomatic__exec "cat ./test/fixtures/grep-output"
 invoke_fingers
 tmuxomatic send-keys "M-a"
 
-sleep 1
+tmuxomatic__sleep 1
 
 tmuxomatic__exec "cat /tmp/fingers-stub-output"
 tmuxomatic__expect "action-stub => scripts/hints.sh"
