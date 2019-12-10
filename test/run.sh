@@ -16,6 +16,9 @@ else
 fi
 
 if [[ "$target" == "within-vm" ]]; then
+  # clean previous ogs
+  rm -rf $CURRENT_DIR/../tmuxomatic*
+
   stty cols 80
   stty rows 24
   fail_count=0
