@@ -115,6 +115,7 @@ function run_shell_action() {
   local command_to_run="$1"
 
   if [[ ! -z $command_to_run ]]; then
+    # TODO escape quotes ( single and double? omg ) in state[result]
     tmux run-shell -b "bash -c 'printf \"${state[result]}\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run'"
   fi
 }
@@ -143,6 +144,8 @@ function handle_exit() {
 
   run_action
 
+  cat /dev/null > /tmp/fingers-command-queue
+
   # exported from scripts/hints.sh
   rm -rf "$pane_input_temp" "$match_lookup_table" "$pane_output_temp" /tmp/fingers-command-queue
 
@@ -150,8 +153,6 @@ function handle_exit() {
 
   tmux set-window-option key-table root
   tmux switch-client -Troot
-
-  cat /dev/null > /tmp/fingers-command-queue
 
   tmux kill-window -t "$fingers_window_id"
 }

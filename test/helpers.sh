@@ -27,7 +27,9 @@ function init_pane() {
 
 function init_pane_fish() {
   tmux_send "c"
+  tmuxomatic__sleep 1
   tmuxomatic__exec "function fish_prompt; echo '# '; end"
+  tmuxomatic__sleep 1
   tmuxomatic__exec "clear"
 }
 
@@ -53,5 +55,6 @@ function begin_hook() {
 }
 
 function end_hook() {
+  sudo rm -rf /tmp/fingers-stub-output
   tmuxomatic__exec  "tmux kill-session -t test"
 }

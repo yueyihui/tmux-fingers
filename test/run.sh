@@ -32,7 +32,7 @@ if [[ "$target" == "within-vm" ]]; then
       tries=0
       while [[ $tries -lt $MAX_RETRIES ]]; do
         echo "Running $test_file" >> $SPEC_OUTPUT_LOG
-        xvfb-run $test_file &>> $TEST_LOG
+        $test_file &>> $TEST_LOG
         exit_code=$?
 
         if [[ $exit_code ]]; then
