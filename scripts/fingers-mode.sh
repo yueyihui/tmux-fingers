@@ -45,7 +45,6 @@ function hide_cursor() {
 
 function copy_result() {
   local result="${state[result]}"
-  local hint="${state[hint]}"
 
   tmux set-buffer "$result"
 }
@@ -116,7 +115,7 @@ function run_shell_action() {
   local command_to_run="$1"
 
   if [[ ! -z $command_to_run ]]; then
-    tmux run-shell -b "export MODIFIER=\"${state[modifier]}\" HINT=\"${state[hint]}\" && printf \"${state[result]}\" | $EXEC_PREFIX $command_to_run"
+    tmux run-shell -b "export MODIFIER=\"${state[modifier]}\" && export HINT=\"${state[input]}\" && printf \"${state[result]}\" | $EXEC_PREFIX $command_to_run"
   fi
 }
 
