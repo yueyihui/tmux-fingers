@@ -32,7 +32,7 @@ if [[ "$target" == "within-vm" ]]; then
       tries=0
       while [[ $tries -lt $MAX_RETRIES ]]; do
         echo "Running $test_file" >> $SPEC_OUTPUT_LOG
-        $test_file &>> $TEST_LOG
+        xvfb-run $test_file &>> $TEST_LOG
         exit_code=$?
 
         if [[ $exit_code ]]; then
@@ -80,5 +80,5 @@ elif [[ -z "$target" ]]; then
 else
   echo "Running tests on $target"
   vagrant up "$target" &>> /dev/null
-  vagrant ssh "$target" -c "cd shared && xvfb-run ./test/run.sh within-vm" 2> /dev/null
+  vagrant ssh "$target" -c "cd shared && ./test/run.sh within-vm" 2> /dev/null
 fi
