@@ -15,6 +15,10 @@ function chr() {
   printf "\\$(printf '%03o' "$1")"
 }
 
+function escape_quotes() {
+  echo $1 | sed 's/"/\\"/g' | sed "s/'/\\'/g"
+}
+
 function is_between() {
   local value=$1
   local lower=$2

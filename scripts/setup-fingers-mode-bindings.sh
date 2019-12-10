@@ -1,7 +1,5 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo "wtf?" >> $CURRENT_DIR/../fingers.log
-
 function fingers_bind() {
   local key="$1"
   local command="$2"

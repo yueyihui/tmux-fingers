@@ -9,6 +9,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $CURRENT_DIR/hints.sh
 source $CURRENT_DIR/utils.sh
 source $CURRENT_DIR/help.sh
+source $CURRENT_DIR/debug.sh
 
 current_pane_id=$1
 fingers_pane_id=$2
@@ -115,8 +116,8 @@ function run_shell_action() {
   local command_to_run="$1"
 
   if [[ ! -z $command_to_run ]]; then
-    # TODO escape quotes ( single and double? omg ) in state[result]
-    tmux run-shell -b "bash -c 'printf \"${state[result]}\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run'"
+    tmux display-message "bash -c 'printf \"$(escape_quotes "${state[result]}")\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run'"
+    tmux run-shell -b "printf \"$(escape_quotes "${state[result]}")\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run"
   fi
 }
 
