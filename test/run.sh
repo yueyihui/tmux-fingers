@@ -66,6 +66,7 @@ if [[ "$target" == "within-vm" ]]; then
   if [[ $fail_count -gt 0 ]]; then
     echo "Displaying tmuxomatic logs"
     cat $CURRENT_DIR/../tmuxomatic*
+    cat $CURRENT_DIR/../test.log
   fi
 
   exit $fail_count
