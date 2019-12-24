@@ -10,7 +10,7 @@ fi
 
 tmuxomatic__begin begin_hook
 
-begin_with_conf "ctrl-action"
+begin_with_conf "alt-action"
 init_pane
 
 tmuxomatic__exec "cat ./test/fixtures/grep-output"
