@@ -93,17 +93,12 @@ function tmuxomatic__expect() {
   fi
 }
 
-# TODO ideally specs shouldn't have any sleeps, but life is hard! Since
-# ci machines are usually kind of slow, sleeps need to be longer there.
+# TODO 
 #
 # Ideally tmuxomatic__exec should now when a command has finished by using
 # "tmux wait", or alert-silence hook, or some tmux sorcery like that.
 function tmuxomatic__sleep() {
-  if [[ -z $CI ]]; then
-    sleep "$1"
-  else
-    sleep "$(($1 * 5))"
-  fi
+  sleep "$1"
 }
 
 # TODO not working in BSD, therefore end hook not being called and :skull:
