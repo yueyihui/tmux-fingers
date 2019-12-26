@@ -115,7 +115,6 @@ function run_shell_action() {
   local command_to_run="$1"
 
   if [[ ! -z $command_to_run ]]; then
-    tmux display-message "bash -c 'printf \"$(escape_quotes "${state[result]}")\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run'"
     tmux run-shell -b "printf \"$(escape_quotes "${state[result]}")\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run"
   fi
 }

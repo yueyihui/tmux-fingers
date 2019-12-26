@@ -1,6 +1,8 @@
 language: generic
 install: ./test/provisioning/ci.sh
-script: ./test/run.sh within-vm
+script:
+  - bash
+  - ./test/run.sh within-vm
 os: osx
 cache: /opt
 env:
