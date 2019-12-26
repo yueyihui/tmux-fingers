@@ -93,11 +93,13 @@ PATTERNS_LIST=(
 "(deployment.app|binding|componentstatuse|configmap|endpoint|event|limitrange|namespace|node|persistentvolumeclaim|persistentvolume|pod|podtemplate|replicationcontroller|resourcequota|secret|serviceaccount|service|mutatingwebhookconfiguration.admissionregistration.k8s.io|validatingwebhookconfiguration.admissionregistration.k8s.io|customresourcedefinition.apiextension.k8s.io|apiservice.apiregistration.k8s.io|controllerrevision.apps|daemonset.apps|deployment.apps|replicaset.apps|statefulset.apps|tokenreview.authentication.k8s.io|localsubjectaccessreview.authorization.k8s.io|selfsubjectaccessreviews.authorization.k8s.io|selfsubjectrulesreview.authorization.k8s.io|subjectaccessreview.authorization.k8s.io|horizontalpodautoscaler.autoscaling|cronjob.batch|job.batch|certificatesigningrequest.certificates.k8s.io|events.events.k8s.io|daemonset.extensions|deployment.extensions|ingress.extensions|networkpolicies.extensions|podsecuritypolicies.extensions|replicaset.extensions|networkpolicie.networking.k8s.io|poddisruptionbudget.policy|clusterrolebinding.rbac.authorization.k8s.io|clusterrole.rbac.authorization.k8s.io|rolebinding.rbac.authorization.k8s.io|role.rbac.authorization.k8s.io|storageclasse.storage.k8s.io)[[:alnum:]_#$%&+=/@-]+"
 )
 
-IFS=$'\n'
-USER_DEFINED_PATTERNS=($(tmux show-options -gv | sed -n -e "$(echo "$(tmux show-options -g | grep -n '@fingers-pattern' | cut -f1 -d: | xargs | sed 's/ /p;/g')p")"))
-unset IFS
+if [[ $(tmux show-options -g | grep -q @fingers-pattern && echo $?) ]]; then
+  IFS=$'\n'
+  USER_DEFINED_PATTERNS=($(tmux show-options -gv | sed -n -e "$(echo "$(tmux show-options -g | grep -n '@fingers-pattern' | cut -f1 -d: | xargs | sed 's/ /p;/g')p")"))
+  unset IFS
 
-PATTERNS_LIST=("${PATTERNS_LIST[@]}" "${USER_DEFINED_PATTERNS[@]}")
+  PATTERNS_LIST=("${PATTERNS_LIST[@]}" "${USER_DEFINED_PATTERNS[@]}")
+fi
 
 i=0
 for pattern in "${PATTERNS_LIST[@]}" ; do
