@@ -1,8 +1,8 @@
 language: generic
 install: ./test/provisioning/ci.sh
 script:
-  - bash
-  - ./test/run.sh within-vm
+  - bash -c 'echo "bash version after install script: $BASH_VERSION"'
+  - bash ./test/run.sh within-vm
 os:
   - linux
   - osx
