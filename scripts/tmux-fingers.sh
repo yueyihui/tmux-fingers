@@ -20,8 +20,13 @@ function init_fingers_pane() {
   local current_window_width=$(echo "$current_window_size" | cut -f1 -d:)
   local current_window_height=$(echo "$current_window_size" | cut -f2 -d:)
 
-  tmux split-window -d -t "$fingers_pane_id" -h -l "$(expr "$current_window_width" - "$current_width" - 1)" '/bin/nop'
-  tmux split-window -d -t "$fingers_pane_id" -l "$(expr "$current_window_height" - "$current_height" - 1)" '/bin/nop'
+  resize_to_width="$(expr "$current_window_width" - "$current_width" - 1)"
+  resize_to_height="$(expr "$current_window_height" - "$current_height" - 1)"
+
+  if [[ ! $resize_to_width -eq -1 ]]; then
+    tmux split-window -d -t "$fingers_pane_id" -h -l "$(expr "$current_window_width" - "$current_width" - 1)" '/bin/nop'
+    tmux split-window -d -t "$fingers_pane_id" -l "$(expr "$current_window_height" - "$current_height" - 1)" '/bin/nop'
+  fi
 
   echo "$fingers_pane_id:$fingers_window_id"
 }
