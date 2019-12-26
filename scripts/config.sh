@@ -94,7 +94,7 @@ PATTERNS_LIST=(
 )
 
 IFS=$'\n'
-USER_DEFINED_PATTERNS=($(tmux show-options -g | grep @fingers-pattern | cut -f1 -d' ' --complement))
+USER_DEFINED_PATTERNS=($(tmux show-options -gv | sed -n -e "$(echo "$(tmux show-options -g | grep -n '@fingers-pattern' | cut -f1 -d: | xargs | sed 's/ /p;/g')p")"))
 unset IFS
 
 PATTERNS_LIST=("${PATTERNS_LIST[@]}" "${USER_DEFINED_PATTERNS[@]}")
