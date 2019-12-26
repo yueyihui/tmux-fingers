@@ -2,9 +2,11 @@
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source $CURRENT_DIR/ubuntu.sh
+brew install bash gawk
 
-sudo mkdir -p /home/vagrant
+# TODO add fihsman user
+
+sudo mkdir -p /opt/vagrant
 sudo ln -s "$PWD" /opt/vagrant/shared
 
-sudo usermod -a -G travis fishman
+$CURRENT_DIR/../install-tmux-versions.sh
