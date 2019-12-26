@@ -1,7 +1,7 @@
 language: generic
 install: ./test/provisioning/ci.sh
 script: ./test/run.sh within-vm
-os: linux
+os: osx
 cache: /opt
 env:
   - CI_TMUX_VERSION=2.3
