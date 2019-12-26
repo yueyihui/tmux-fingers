@@ -3,7 +3,9 @@ install: ./test/provisioning/ci.sh
 script:
   - bash
   - ./test/run.sh within-vm
-os: osx
+os:
+  - linux
+  - osx
 cache: /opt
 env:
   - CI_TMUX_VERSION=2.3
