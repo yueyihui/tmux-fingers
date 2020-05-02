@@ -1,4 +1,6 @@
-#!/usr/bin/env -S ruby --disable-gems
+#!/usr/bin/env ruby
+
+# env -S is not portable? --disable-gems improves performance
 
 class Hinter
   def initialize
@@ -43,7 +45,7 @@ class Hinter
 
     # TODO error handling o ke ase
     hints_path = File.join(ENV["FINGERS_ALPHABET_DIR"], n_matches.to_s)
-    @hints = File.open(hints_path).read.split(" ")
+    @hints = File.open(hints_path).read.split(" ").reverse
   end
 
   def replace(match)
