@@ -6,8 +6,6 @@ class Hinter
   end
 
   def run
-    last_line_index = lines.length - 1
-
     lines[0..-2].each { |line| process_line(line, "\n") }
     process_line(lines[-1], "")
 
