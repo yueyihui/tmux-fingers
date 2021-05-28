@@ -132,7 +132,7 @@ function run_action() {
   fi
 
   if [[ "$action" == ":open:" ]]; then
-    run_shell_action "$FINGERS_SYSTEM_OPEN_COMMAND"
+    tmux run-shell -b "printf \"$(escape_quotes "${state[final_result]}")\" | xargs -I {} tmux send-keys 'vim -- {}'; tmux send-keys 'C-m'"
   elif [[ "$action" == ":copy:" ]]; then
     run_shell_action "$FINGERS_SYSTEM_COPY_COMMAND"
   elif [[ "$action" == ":paste:" ]]; then
